@@ -1,12 +1,29 @@
-#include <ncurses.h>
+#define nd_SIZE 38
 
+
+
+#include <ncurses.h>
+#include <string.h>
+
+char number_display[nd_SIZE] = {};
 
 const int KEY_ESC = 27;
+
+void display2()
+{
+   	for(int i = 0; i < nd_SIZE; i++)
+	{
+           printw("%c",number_display[i]);
+	}
+	printw("\n");
+
+}
 
 void calc_display()
 {
    	printw("##########################################\n");
-	printw("##                                      ##\n");
+	printw("##  ");
+	display2();
 	printw("##########################################\n");
 	printw("##########################################\n");
 	printw("##  1  ###########  2  ############  3  ##\n");
@@ -29,13 +46,15 @@ int main()
     noecho();
     set_escdelay(0);
 
+    memset(number_display, ' ', nd_SIZE);
+
     int y, x;
 
     int ch = -1;
 
 
    	refresh();
-    calc_display();
+    calc_display(number_display);
     getyx(stdscr, y, x);
     move(6, 20);
     char c;
@@ -131,14 +150,26 @@ int main()
             chtype ch = inch();
             c = ch & A_CHARTEXT;
 
-            getyx(stdscr, y, x);
+            for(int i = nd_SIZE - 1; i > -1; i--)
+            {
+                if(i != 0)
+                {
+                    number_display[i - 1] = number_display[i];
+                    break;
+                }
+            }
 
+            getyx(stdscr, y, x);
             int prev_y = y;
             int prev_x = x;
 
-            move( 1, 37);
-            printw("%c", c);
+            move(1,0);
+            clrtoeol();
+            display2();
+
             move(prev_y,prev_x);
+
+            refresh();
         }
 
         if(ch == '0' || ch == '1' || ch == '2' || ch == '3' || ch == '4' || ch == '5' || ch == '6' || ch == '7' || ch == '8' || ch == '9' )
